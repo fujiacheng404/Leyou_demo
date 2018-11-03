@@ -5,12 +5,15 @@ spring:
   application:
     name: item-service
   datasource:
-    url: jdbc:mysql://localhost:3306/heima
+    # 94.191.18.238
+    url: jdbc:mysql://94.191.18.238:3306/heima
+    driver-class-name: com.mysql.jdbc.Driver
     username: root
-    password: 123456
+    password: ROOT123456
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
+# 配置注册中心
 eureka:
   client:
     service-url:

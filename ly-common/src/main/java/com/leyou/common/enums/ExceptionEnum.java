@@ -18,7 +18,9 @@ public enum ExceptionEnum {
     /*
      * 枚举必须定义在类的最前边
      * */
-    PRICE_CANNOT_BE_NULL(400, "价格不能为空");
+    PRICE_CANNOT_BE_NULL(400, "价格不能为空"),
+    CATEGORY_NOT_FOND(404,"商品分类未查到");
+    
     private int code;
     private String msg;
 }
