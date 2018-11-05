@@ -4,17 +4,21 @@ import com.leyou.common.vo.PageResult;
 import com.leyou.item.pojo.Brand;
 import com.leyou.item.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * @Author: FuJiaCheng
  * @Date: Create In 23:38 2018/11/3
  * @Modified:
- * @annotation:
+ * @annotation: 品牌Controller
  */
 
 @Controller
@@ -44,5 +48,19 @@ public class BrandController {
     ) {
         PageResult<Brand> pageResult = brandService.queryBrandByPage(page, rows, sortBy, desc, key);
         return ResponseEntity.ok(pageResult);
+    }
+    
+    /**
+     * 品牌新增
+     *
+     * @param brand
+     * @param cids
+     * @return
+     */
+    @PostMapping
+    public ResponseEntity<Void> svaeBrand(Brand brand, @RequestParam("cids") List<Long> cids) {
+        brandService.saveBrand(brand, cids);
+        // 构建没有正文的响应实体。
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

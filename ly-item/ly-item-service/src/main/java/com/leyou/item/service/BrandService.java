@@ -9,6 +9,7 @@ import com.leyou.item.mapper.BrandMapper;
 import com.leyou.item.pojo.Brand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
@@ -27,6 +28,16 @@ public class BrandService {
     @Autowired
     private BrandMapper brandMapper;
     
+    /**
+     * 分页查询品牌
+     *
+     * @param page
+     * @param rows
+     * @param sortBy
+     * @param desc
+     * @param key
+     * @return
+     */
     public PageResult<Brand> queryBrandByPage(Integer page, Integer rows, String sortBy, Boolean desc, String key) {
         // 分页
         PageHelper.startPage(page, rows);
@@ -48,4 +59,26 @@ public class BrandService {
         return new PageResult<Brand>(brandPageInfo.getTotal(), brandPageInfo.getPages(), info);
         //return brandPageInfo;
     }
+    
+    /**
+     * 新增一个品牌
+     *
+     * @param brand
+     * @param cids
+     */
+    @Transactional
+    public void saveBrand(Brand brand, List<Long> cids) {
+        brand.setId(null);
+        int insert = brandMapper.insert(brand);
+        if (insert < 1) {
+            throw new LyException(ExceptionEnum.BRAND_SAVE_ERROR);
+        }
+        for (Long cid : cids) {
+            int rows = brandMapper.insertCategoryBrand(cid, brand.getId());
+            if (rows < 1) {
+                throw new LyException(ExceptionEnum.CATEGORY_BRAND_SAVE_ERROR);
+            }
+        }
+    }
+    
 }
