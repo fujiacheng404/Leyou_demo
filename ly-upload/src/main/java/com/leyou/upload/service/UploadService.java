@@ -50,7 +50,5 @@ public class UploadService {
             log.error("上传文件失败", e);
             throw new LyException(ExceptionEnum.UPLOAD_ERROR);
         }
-        //返回路径
-        //return null;
     }
 }
