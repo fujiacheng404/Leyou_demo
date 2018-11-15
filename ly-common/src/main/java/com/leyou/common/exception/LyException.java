@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-
-
 /**
  * @Author: FuJiaCheng
  * @Date: Create In 20:48 2018/11/2
@@ -18,6 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class LyException extends RuntimeException{
+public class LyException extends RuntimeException {
     private ExceptionEnum exceptionEnums;
 }

@@ -22,7 +22,11 @@ public enum ExceptionEnum {
     CATEGORY_NOT_FOND(404, "商品分类未查到"),
     BRAND_NOT_FOND(404, "品牌未查到"),
     BRAND_SAVE_ERROR(500, "新增品牌失败"),
+    SPEC_GROUP_NOT_FOUND(404, "商品规格组未查到"),
+    SPEC_PARAM_NOT_FOUND(404, "商品规格组下具体参数未查到"),
+    GOODS_NOT_FOND(404, "商品不存在"),
     CATEGORY_BRAND_SAVE_ERROR(500, "新增品牌失败"),
+    GOODS_SAVE_ERROR(500, "新增商品失败"),
     UPLOAD_ERROR(500, "文件上传失败"),
     INVALID_FILE_TYPE(400, "无效的文件类型");
     

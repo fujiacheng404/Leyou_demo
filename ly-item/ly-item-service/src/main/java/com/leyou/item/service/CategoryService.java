@@ -23,7 +23,6 @@ public class CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
     
-    
     public List<Category> queryCategoryListByPid(Long pid) {
         Category category = new Category();
         category.setParentId(pid);
@@ -34,6 +33,15 @@ public class CategoryService {
             // 返回404
             throw new LyException(ExceptionEnum.CATEGORY_NOT_FOND);
         }
+        return list;
+    }
+    
+    public List<Category> queryByIds(List<Long> Ids) {
+        List<Category> list = categoryMapper.selectByIdList(Ids);
+        if (CollectionUtils.isEmpty(list)) {
+            throw new LyException(ExceptionEnum.CATEGORY_NOT_FOND);
+        }
+        
         return list;
     }
 }

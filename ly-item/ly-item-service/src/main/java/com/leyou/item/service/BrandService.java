@@ -73,7 +73,9 @@ public class BrandService {
         if (insert < 1) {
             throw new LyException(ExceptionEnum.BRAND_SAVE_ERROR);
         }
+        
         for (Long cid : cids) {
+            // 新增中间表
             int rows = brandMapper.insertCategoryBrand(cid, brand.getId());
             if (rows < 1) {
                 throw new LyException(ExceptionEnum.CATEGORY_BRAND_SAVE_ERROR);
@@ -81,4 +83,32 @@ public class BrandService {
         }
     }
     
+    /**
+     * 按照主键查询实体类
+     *
+     * @param Id
+     * @return
+     */
+    public Brand queryById(Long Id) {
+        Brand brand = brandMapper.selectByPrimaryKey(Id); //按照主键查询
+        if (brand == null) {
+            throw new LyException(ExceptionEnum.BRAND_NOT_FOND);
+        }
+        
+        return brand;
+    }
+    
+    /**
+     * 按照
+     * @param cid
+     * @return
+     */
+    public List<Brand> queryBrandByCid(Long cid) {
+        List<Brand> brands = brandMapper.queryByCategoryId(cid);
+        
+        if (CollectionUtils.isEmpty(brands)) {
+            throw new LyException(ExceptionEnum.BRAND_NOT_FOND);
+        }
+        return brands;
+    }
 }

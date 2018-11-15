@@ -1,6 +1,7 @@
 package com.leyou.item.mapper;
 
 import com.leyou.item.pojo.Category;
+import tk.mybatis.mapper.additional.idlist.IdListMapper;
 import tk.mybatis.mapper.common.Mapper;
 
 /**
@@ -10,5 +11,8 @@ import tk.mybatis.mapper.common.Mapper;
  * @annotation: 商品类别Mapper
  */
 
-public interface CategoryMapper extends Mapper<Category>{
+/**
+ * 继承 IdListMapper 可以根据多个ID去查询
+ */
+public interface CategoryMapper extends Mapper<Category>, IdListMapper<Category, Long> {
 }
