@@ -36,6 +36,12 @@ public class CategoryService {
         return list;
     }
     
+    /**
+     * 根据ID查询商品分类
+     *
+     * @param Ids
+     * @return
+     */
     public List<Category> queryByIds(List<Long> Ids) {
         List<Category> list = categoryMapper.selectByIdList(Ids);
         if (CollectionUtils.isEmpty(list)) {

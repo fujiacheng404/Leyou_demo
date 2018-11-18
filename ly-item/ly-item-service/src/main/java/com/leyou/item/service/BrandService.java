@@ -84,7 +84,7 @@ public class BrandService {
     }
     
     /**
-     * 按照主键查询实体类
+     * 按照ID查询品牌
      *
      * @param Id
      * @return
@@ -99,7 +99,7 @@ public class BrandService {
     }
     
     /**
-     * 按照
+     * 按照category的id查询品牌
      * @param cid
      * @return
      */

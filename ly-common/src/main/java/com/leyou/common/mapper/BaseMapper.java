@@ -13,5 +13,5 @@ import tk.mybatis.mapper.common.Mapper;
  */
 
 @RegisterMapper //加上这个注解才可以被?扫描到
-public interface BaseMapper<T> extends Mapper<T>, IdListMapper<T, T>, InsertListMapper<T> {
+public interface BaseMapper<T> extends Mapper<T>, IdListMapper<T, Long>, InsertListMapper<T> {
 }

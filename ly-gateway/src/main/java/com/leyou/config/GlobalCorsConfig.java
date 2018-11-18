@@ -23,6 +23,7 @@ public class GlobalCorsConfig {
         //1).允许的域 如果写*的话就不能使用cookie了
         corsConfiguration.addAllowedOrigin("http://manage.leyou.com");
         corsConfiguration.addAllowedOrigin("http://api.leyou.com");
+        corsConfiguration.addAllowedOrigin("http://www.leyou.com");
         //2).是否发送cookie消息
         corsConfiguration.setAllowCredentials(true);
         //3).允许的请求方式

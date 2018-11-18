@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -128,6 +125,17 @@ public class GoodsService {
         spuDetail.setSpuId(spu.getId());
         int insertSpuDetailResult = spuDetailMapper.insert(spuDetail);
         
+        // 新增sku和stock
+        saveSkuAndStock(spu);
+        
+    }
+    
+    /**
+     * 新增sku和stock
+     *
+     * @param spu
+     */
+    private void saveSkuAndStock(Spu spu) {
         // 定义库存对象集合
         List<Stock> stockList = new ArrayList<>();
         
@@ -157,7 +165,107 @@ public class GoodsService {
         }
         
         // 批量新增库存
-        stockMapper.insertList(stockList);
+        int insertStockListResult = stockMapper.insertList(stockList);
+        if (insertStockListResult != stockList.size()) {
+            throw new LyException(ExceptionEnum.STOCK_SAVE_ERROR);
+        }
     }
     
+    
+    /**
+     * 根据商品详情表ID查询
+     * 商品表详情ID和spu的ID是一样的
+     *
+     * @param spuId
+     * @return
+     */
+    public SpuDetail queryDetailById(Long spuId) {
+        SpuDetail spuDetail = spuDetailMapper.selectByPrimaryKey(spuId);
+        if (spuDetail == null) {
+            throw new LyException(ExceptionEnum.GOODS_DETAIL_NOT_FOND); //商品详情不存在
+        }
+        return spuDetail;
+    }
+    
+    /**
+     * 根据SkuId查询SKU信息
+     *
+     * @param spuId
+     * @return
+     */
+    public List<Sku> querySkuBySpuId(Long spuId) {
+        Sku sku = new Sku();
+        sku.setSpuId(spuId);
+        
+        List<Sku> selectSkuResult = skuMapper.select(sku);
+        if (CollectionUtils.isEmpty(selectSkuResult)) {
+            throw new LyException(ExceptionEnum.GOODS_SKU_NOT_FOND); //商品SKU不存在
+        }
+        
+        // 查询库存
+        /*for (Sku s : selectSkuResult) {
+            Stock stock = stockMapper.selectByPrimaryKey(s.getId());
+            if (StringUtils.isEmpty(stock)) {
+                throw new LyException(ExceptionEnum.GOODS_STOCK_NOT_FOND); //商品库存不存在
+            }
+            s.setStock(stock.getStock());
+        }*/
+        
+        // 查询库存的简写
+        List<Long> ids = selectSkuResult.stream().map(Sku::getId).collect(Collectors.toList());
+        List<Stock> stockList = stockMapper.selectByIdList(ids);
+        if (CollectionUtils.isEmpty(stockList)) {
+            throw new LyException(ExceptionEnum.GOODS_STOCK_NOT_FOND);
+        }
+        
+        // 把stock变成一个Map类型 键：sku的ID 值：库存值
+        Map<Long, Integer> stockMap = stockList.stream()
+                .collect(Collectors.toMap(Stock::getSkuId, Stock::getStock));
+        
+        selectSkuResult.forEach(S -> S.setStock(stockMap.get(sku.getId())));
+        return selectSkuResult;
+    }
+    
+    /**
+     * 商品的修改
+     *
+     * @param spu
+     */
+    @Transactional
+    public void updateGoods(Spu spu) {
+        if (spu.getId() == null) {
+            throw new LyException(ExceptionEnum.GOODS_UPDATE_FOND);
+        }
+        
+        Sku sku = new Sku();
+        sku.setSpuId(spu.getId());
+        
+        // 查询 sku
+        List<Sku> selectSkuResult = skuMapper.select(sku);
+        if (!CollectionUtils.isEmpty(selectSkuResult)) {
+            // 删除sku
+            skuMapper.delete(sku);
+            // 删除stock (库存)
+            List<Long> ids = selectSkuResult.stream().map(Sku::getId).collect(Collectors.toList());
+            stockMapper.deleteByIdList(ids);
+        }
+        // 修改spu的属性
+        spu.setValid(null);
+        spu.setSaleable(null);
+        spu.setCreateTime(null);
+        spu.setLastUpdateTime(new Date());
+        
+        int updateSpuResult = spuMapper.updateByPrimaryKeySelective(spu); //根据主键更新属性不为null的值
+        if (updateSpuResult < 1) {
+            throw new LyException(ExceptionEnum.GOODS_UPDATE_ERROR);
+        }
+        // 修改detail
+        int updateDetailResult = spuDetailMapper.updateByPrimaryKeySelective(spu.getSpuDetail());
+        if (updateDetailResult < 1) {
+            throw new LyException(ExceptionEnum.GOODS_UPDATE_ERROR);
+        }
+        
+        // 新增sku和stock
+        saveSkuAndStock(spu);
+    }
 }
